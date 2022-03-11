@@ -19,6 +19,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 app.use(express.json());
 
+app.use((req, res, next) => {
+  // console.log(req.headers);
+  next();
+});
+
 //Define port that's to be used, using listen method when server is running app.js
 // const port = 5000;
 //  app.listen(port, () => {

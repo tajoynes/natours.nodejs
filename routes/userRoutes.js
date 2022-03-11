@@ -1,9 +1,14 @@
 //Core Module
-const express = require('express')
-const userController = require('./../controller/userController')
+const express = require('express');
+const userController = require('./../controller/userController');
+const authController = require('./../controller/authController');
+
 const router = express.Router();
 
-//----------> Exported from user controller file 
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
+
+//----------> Exported from user controller file
 // const getUsers = (req, res) => {
 //     res.status(500).json({
 //         status: 'error',
@@ -36,12 +41,11 @@ const router = express.Router();
 // };
 //********************************************************/
 
-router.route('/')
-.get(userController.getUsers)
-.post(userController.createUser);
-router.route('/:id')
-.get(userController.getUser)
-.patch(userController.updateUser)
-.delete(userController.deleteUser);
+router.route('/').get(userController.getUsers).post(userController.createUser);
+router
+  .route('/:id')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
-module.exports = router
+module.exports = router;
