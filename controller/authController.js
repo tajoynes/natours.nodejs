@@ -80,10 +80,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   //If successful-check if user exist
-  const freshUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id);
 
   console.log(currentUser);
-  if (!freshUser) {
+  if (!currentUser) {
     return next(new AppError('User with that token no longer exist', 401));
   }
 
@@ -98,3 +98,29 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // Roles are an array['admin', 'lead-guide']. role is defaulted to 'user'
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+    next();
+  };
+};
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  //Get user based on input email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError('There is no user with that email', 404));
+  }
+  //Generate randomized token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  //Send to users email
+});
+exports.resetPassword = (req, res, next) => {};
